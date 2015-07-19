@@ -10,4 +10,6 @@
 
 @interface WebViewController : UIViewController
 
+@property NSTimer *timer;
+
 @end

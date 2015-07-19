@@ -8,8 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MainViewController : UIViewController
+@interface RootViewController : UIViewController
 
+@property CGPoint position;
+@property NSTimer *timer;
+
+-(IBAction)startTimer;
+-(IBAction)stopTimer;
 
 @end
 

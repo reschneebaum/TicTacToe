@@ -6,10 +6,10 @@
 //  Copyright (c) 2015 Rachel Schneebaum. All rights reserved.
 //
 
-#import "MainViewController.h"
+#import "RootViewController.h"
 #import "WebViewController.h"
 
-@interface MainViewController () <UIGestureRecognizerDelegate, UIAlertViewDelegate>
+@interface RootViewController () <UIGestureRecognizerDelegate, UIAlertViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *labelOne;
 @property (weak, nonatomic) IBOutlet UILabel *labelTwo;
@@ -22,22 +22,29 @@
 @property (weak, nonatomic) IBOutlet UILabel *labelNine;
 @property (weak, nonatomic) IBOutlet UILabel *labelCurrentPlayer;
 @property (weak, nonatomic) IBOutlet UILabel *labelDragged;
+@property (weak, nonatomic) IBOutlet UIButton *buttonGameBegin;
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *tapGesture;
 @property (strong, nonatomic) IBOutlet UIPanGestureRecognizer *panGesture;
 
-@property (strong, nonatomic) NSTimer *timer;
 @property UILabel *detectedLabel;
 @property NSString *currentPlayer;
 @property NSString *winningPlayer;
+@property (weak, nonatomic) IBOutlet UILabel *labelTimer;
 
 @property CGPoint originalCenter;
 
 @end
 
-@implementation MainViewController
+@implementation RootViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    //set defaults
+    self.buttonGameBegin.enabled = true;
+    self.buttonGameBegin.hidden = false;
+    self.labelTimer.enabled = false;
+    self.labelTimer.hidden = true;
     self.currentPlayer = @"o";
     self.labelCurrentPlayer.text = @"o";
     self.labelCurrentPlayer.textColor = [UIColor redColor];
@@ -46,9 +53,22 @@
     [self.view addGestureRecognizer:self.panGesture];
 }
 
-//start timer
--(void) startTimer:(NSTimer *)timer {
-    NSLog(@"timer started");
+-(IBAction)startTimer:(id)sender {
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0/10.0
+        target:self
+        selector:@selector(updateTimer)
+        userInfo:nil
+        repeats:YES];
+}
+
+-(IBAction)stopTimer:(id)sender {
+    [self.timer invalidate];
+    self.timer = nil;
+    [self updateTimer:self.timer];
+}
+
+-(IBAction)updateTimer:(id)sender {
+    self.labelTimer.text = [NSString stringWithFormat:@"%i", self.timer.counter--];
 }
 
 //determines which if any label is tapped
@@ -78,8 +98,6 @@
 
 //changes text and color; resets player turns
 - (IBAction)onTapDetected:(UITapGestureRecognizer *)sender {
-    [self startTimer:self.timer];
-
     self.detectedLabel = [self findLabelUsingPoint:[sender locationInView:self.view]];
     NSLog(@"detectedLabel: %@", self.detectedLabel.description);
 
@@ -113,73 +131,56 @@
 //checks for a winning combination
 - (void)winnerDetermined {
     if ([self.labelOne.text isEqualToString:@"x"] && [self.labelTwo.text isEqualToString:@"x"] && [self.labelThree.text isEqualToString:@"x"]) {
-        //NSLog(@"x won!");
         self.winningPlayer = @"x";
         [self winnerDisplayed];
     } else if ([self.labelFour.text isEqualToString:@"x"] && [self.labelFive.text isEqualToString:@"x"] && [self.labelSix.text isEqualToString:@"x"]) {
-        NSLog(@"x won!");
         self.winningPlayer = @"x";
         [self winnerDisplayed];
     } else if ([self.labelSeven.text isEqualToString:@"x"] && [self.labelEight.text isEqualToString:@"x"] && [self.labelNine.text isEqualToString:@"x"]) {
-        NSLog(@"x won!");
         self.winningPlayer = @"x";
         [self winnerDisplayed];
     } else if ([self.labelOne.text isEqualToString:@"x"] && [self.labelFour.text isEqualToString:@"x"] && [self.labelSeven.text isEqualToString:@"x"]) {
-        NSLog(@"x won!");
         self.winningPlayer = @"x";
         [self winnerDisplayed];
     } else if ([self.labelTwo.text isEqualToString:@"x"] && [self.labelFive.text isEqualToString:@"x"] && [self.labelEight.text isEqualToString:@"x"]) {
-        NSLog(@"x won!");
         self.winningPlayer = @"x";
         [self winnerDisplayed];
     } else if ([self.labelThree.text isEqualToString:@"x"] && [self.labelSix.text isEqualToString:@"x"] && [self.labelNine.text isEqualToString:@"x"]) {
-        NSLog(@"x won!");
         self.winningPlayer = @"x";
         [self winnerDisplayed];
     } else if ([self.labelOne.text isEqualToString:@"x"] && [self.labelFive.text isEqualToString:@"x"] && [self.labelNine.text isEqualToString:@"x"]) {
-        NSLog(@"x won!");
         self.winningPlayer = @"x";
         [self winnerDisplayed];
     } else if ([self.labelThree.text isEqualToString:@"x"] && [self.labelFive.text isEqualToString:@"x"] && [self.labelSeven.text isEqualToString:@"x"]) {
-        NSLog(@"x won!");
         self.winningPlayer = @"x";
         [self winnerDisplayed];
     }
 
     if ([self.labelOne.text isEqualToString:@"o"] && [self.labelTwo.text isEqualToString:@"o"] && [self.labelThree.text isEqualToString:@"o"]) {
-        NSLog(@"o won!");
         self.winningPlayer = @"o";
         [self winnerDisplayed];
     } else if ([self.labelFour.text isEqualToString:@"o"] && [self.labelFive.text isEqualToString:@"o"] && [self.labelSix.text isEqualToString:@"o"]) {
-        NSLog(@"o won!");
         self.winningPlayer = @"o";
         [self winnerDisplayed];
     } else if ([self.labelSeven.text isEqualToString:@"o"] && [self.labelEight.text isEqualToString:@"o"] && [self.labelNine.text isEqualToString:@"o"]) {
-        NSLog(@"o won!");
         self.winningPlayer = @"o";
         [self winnerDisplayed];
     } else if ([self.labelOne.text isEqualToString:@"o"] && [self.labelFour.text isEqualToString:@"o"] && [self.labelSeven.text isEqualToString:@"o"]) {
-        NSLog(@"o won!");
         self.winningPlayer = @"o";
         [self winnerDisplayed];
     } else if ([self.labelTwo.text isEqualToString:@"o"] && [self.labelFive.text isEqualToString:@"o"] && [self.labelEight.text isEqualToString:@"o"]) {
-        NSLog(@"o won!");
         self.winningPlayer = @"o";
         [self winnerDisplayed];
     } else if ([self.labelThree.text isEqualToString:@"o"] && [self.labelSix.text isEqualToString:@"o"] && [self.labelNine.text isEqualToString:@"o"]) {
-        NSLog(@"o won!");
         self.winningPlayer = @"o";
         [self winnerDisplayed];
     } else if ([self.labelOne.text isEqualToString:@"o"] && [self.labelFive.text isEqualToString:@"o"] && [self.labelNine.text isEqualToString:@"o"]) {
-        NSLog(@"o won!");
         self.winningPlayer = @"o";
         [self winnerDisplayed];
     } else if ([self.labelThree.text isEqualToString:@"o"] && [self.labelFive.text isEqualToString:@"o"] && [self.labelSeven.text isEqualToString:@"o"]) {
-        NSLog(@"o won!");
         self.winningPlayer = @"o";
         [self winnerDisplayed];
     } else {
-        NSLog(@"no one won :(");
         self.winningPlayer = nil;
         [self completionCheck];
     }
@@ -187,15 +188,16 @@
 
 //displays result in an alert
 - (void)winnerDisplayed {
+    [self.timer invalidate];
     UIAlertView *winnerAlert = [[UIAlertView alloc] init];
     [winnerAlert addButtonWithTitle:@"Play Again?"];
 
     if ([self.winningPlayer  isEqual: @"x"]) {
-        winnerAlert.title = @"X Won!";
+        winnerAlert.title = @"x won!";
     } else if ([self.winningPlayer isEqual: @"o"]) {
-        winnerAlert.title = @"O Won!";
+        winnerAlert.title = @"o won!";
     } else {
-        winnerAlert.title = @"It's a Tie!";
+        winnerAlert.title = @"it's a tie!";
     }
     winnerAlert.delegate = self;
     [winnerAlert show];
@@ -229,6 +231,10 @@
     self.labelEight.text = @"";
     self.labelNine.text = @"";
     self.currentPlayer = @"o";
+    self.buttonGameBegin.enabled = true;
+    self.buttonGameBegin.hidden = false;
+    self.labelTimer.enabled = false;
+    self.labelTimer.hidden = true;
 }
 
 //sets pan gesture
@@ -253,17 +259,35 @@
     }
 
     if (sender.state == UIGestureRecognizerStateEnded) {
+        [self.timer invalidate];
         [UIView animateWithDuration:0.0f animations:^{
             self.labelDragged.center = self.originalCenter;
         }];
     }
 }
 
+- (IBAction)onGameBeginButtonTapped:(UIButton *)sender {
+    self.buttonGameBegin.enabled = false;
+    self.buttonGameBegin.hidden = true;
+    self.labelTimer.enabled = true;
+    self.labelTimer.hidden = false;
+    [self.labelTimer sizeToFit];
+    [self startTimer:self.timer];
+}
+
+
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     WebViewController *vc = segue.destinationViewController;
+    vc.timer = self.timer;
 }
 
 -(IBAction)goBack:(UIStoryboardSegue *)sender {
+    self.buttonGameBegin.enabled = false;
+    self.buttonGameBegin.hidden = true;
+    self.labelTimer.enabled = true;
+    self.labelTimer.hidden = false;
+    [self.labelTimer sizeToFit];
+    [self startTimer:self.timer];
 }
 
 

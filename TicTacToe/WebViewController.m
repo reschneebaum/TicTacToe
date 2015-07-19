@@ -7,8 +7,9 @@
 //
 
 #import "WebViewController.h"
+#import <WebKit/WebKit.h>
 
-@interface WebViewController ()
+@interface WebViewController () <UIWebViewDelegate,  UITextFieldDelegate, UIAlertViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIButton *backButton;
 @property (weak, nonatomic) IBOutlet UIButton *forwardButton;
