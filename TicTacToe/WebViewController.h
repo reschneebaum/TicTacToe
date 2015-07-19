@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  WebViewController.h
 //  TicTacToe
 //
 //  Created by Rachel Schneebaum on 7/18/15.
@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface RootViewController : UIViewController
-
+@interface WebViewController : UIViewController
 
 @end
-

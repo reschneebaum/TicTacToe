@@ -9,11 +9,13 @@
 /* Begin PBXBuildFile section */
 		C4643ED31B5AA0FA007F78E7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C4643ED21B5AA0FA007F78E7 /* main.m */; };
 		C4643ED61B5AA0FA007F78E7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C4643ED51B5AA0FA007F78E7 /* AppDelegate.m */; };
-		C4643ED91B5AA0FA007F78E7 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C4643ED81B5AA0FA007F78E7 /* RootViewController.m */; };
+		C4643ED91B5AA0FA007F78E7 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C4643ED81B5AA0FA007F78E7 /* MainViewController.m */; };
 		C4643EDC1B5AA0FA007F78E7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C4643EDA1B5AA0FA007F78E7 /* Main.storyboard */; };
 		C4643EDE1B5AA0FA007F78E7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4643EDD1B5AA0FA007F78E7 /* Images.xcassets */; };
 		C4643EE11B5AA0FA007F78E7 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = C4643EDF1B5AA0FA007F78E7 /* LaunchScreen.xib */; };
 		C4643EED1B5AA0FA007F78E7 /* TicTacToeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C4643EEC1B5AA0FA007F78E7 /* TicTacToeTests.m */; };
+		C48BB42D1B5B2E3400E326C2 /* EntryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C48BB42C1B5B2E3400E326C2 /* EntryViewController.m */; };
+		C48BB4301B5B2E4B00E326C2 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C48BB42F1B5B2E4B00E326C2 /* WebViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,14 +34,18 @@
 		C4643ED21B5AA0FA007F78E7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C4643ED41B5AA0FA007F78E7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		C4643ED51B5AA0FA007F78E7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		C4643ED71B5AA0FA007F78E7 /* RootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
-		C4643ED81B5AA0FA007F78E7 /* RootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
+		C4643ED71B5AA0FA007F78E7 /* MainViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
+		C4643ED81B5AA0FA007F78E7 /* MainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		C4643EDB1B5AA0FA007F78E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C4643EDD1B5AA0FA007F78E7 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C4643EE01B5AA0FA007F78E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		C4643EE61B5AA0FA007F78E7 /* TicTacToeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TicTacToeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4643EEB1B5AA0FA007F78E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C4643EEC1B5AA0FA007F78E7 /* TicTacToeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TicTacToeTests.m; sourceTree = "<group>"; };
+		C48BB42B1B5B2E3400E326C2 /* EntryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntryViewController.h; sourceTree = "<group>"; };
+		C48BB42C1B5B2E3400E326C2 /* EntryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EntryViewController.m; sourceTree = "<group>"; };
+		C48BB42E1B5B2E4B00E326C2 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
+		C48BB42F1B5B2E4B00E326C2 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,8 +89,12 @@
 			children = (
 				C4643ED41B5AA0FA007F78E7 /* AppDelegate.h */,
 				C4643ED51B5AA0FA007F78E7 /* AppDelegate.m */,
-				C4643ED71B5AA0FA007F78E7 /* RootViewController.h */,
-				C4643ED81B5AA0FA007F78E7 /* RootViewController.m */,
+				C48BB42B1B5B2E3400E326C2 /* EntryViewController.h */,
+				C48BB42C1B5B2E3400E326C2 /* EntryViewController.m */,
+				C4643ED71B5AA0FA007F78E7 /* MainViewController.h */,
+				C4643ED81B5AA0FA007F78E7 /* MainViewController.m */,
+				C48BB42E1B5B2E4B00E326C2 /* WebViewController.h */,
+				C48BB42F1B5B2E4B00E326C2 /* WebViewController.m */,
 				C4643EDA1B5AA0FA007F78E7 /* Main.storyboard */,
 				C4643EDD1B5AA0FA007F78E7 /* Images.xcassets */,
 				C4643EDF1B5AA0FA007F78E7 /* LaunchScreen.xib */,
@@ -219,7 +229,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C4643ED91B5AA0FA007F78E7 /* RootViewController.m in Sources */,
+				C4643ED91B5AA0FA007F78E7 /* MainViewController.m in Sources */,
+				C48BB4301B5B2E4B00E326C2 /* WebViewController.m in Sources */,
+				C48BB42D1B5B2E3400E326C2 /* EntryViewController.m in Sources */,
 				C4643ED61B5AA0FA007F78E7 /* AppDelegate.m in Sources */,
 				C4643ED31B5AA0FA007F78E7 /* main.m in Sources */,
 			);
@@ -416,6 +428,7 @@
 				C4643EF21B5AA0FA007F78E7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C4643EF31B5AA0FA007F78E7 /* Build configuration list for PBXNativeTarget "TicTacToeTests" */ = {
 			isa = XCConfigurationList;
@@ -424,6 +437,7 @@
 				C4643EF51B5AA0FA007F78E7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
