@@ -23,15 +23,19 @@
 @property (weak, nonatomic) IBOutlet UILabel *labelCurrentPlayer;
 @property (weak, nonatomic) IBOutlet UILabel *labelDragged;
 @property (weak, nonatomic) IBOutlet UIButton *buttonGameBegin;
-@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *tapGesture;
+//@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *tapGesture;
 @property (strong, nonatomic) IBOutlet UIPanGestureRecognizer *panGesture;
-
+@property CGPoint originalCenter;
 @property UILabel *detectedLabel;
 @property NSString *currentPlayer;
 @property NSString *winningPlayer;
 @property (weak, nonatomic) IBOutlet UILabel *labelTimer;
+@property NSTimer *countdownTimer;
+@property NSUInteger remainingTicks;
 
-@property CGPoint originalCenter;
+-(IBAction)doCountdown: (id)sender;
+-(void)handleTimerTick;
+-(void)updateLabel;
 
 @end
 
@@ -41,34 +45,10 @@
     [super viewDidLoad];
 
     //set defaults
-    self.buttonGameBegin.enabled = true;
-    self.buttonGameBegin.hidden = false;
-    self.labelTimer.enabled = false;
-    self.labelTimer.hidden = true;
-    self.currentPlayer = @"o";
-    self.labelCurrentPlayer.text = @"o";
-    self.labelCurrentPlayer.textColor = [UIColor redColor];
+    [self onGameReady];
 
     self.originalCenter = self.labelCurrentPlayer.center;
     [self.view addGestureRecognizer:self.panGesture];
-}
-
--(IBAction)startTimer:(id)sender {
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0/10.0
-        target:self
-        selector:@selector(updateTimer)
-        userInfo:nil
-        repeats:YES];
-}
-
--(IBAction)stopTimer:(id)sender {
-    [self.timer invalidate];
-    self.timer = nil;
-    [self updateTimer:self.timer];
-}
-
--(IBAction)updateTimer:(id)sender {
-    self.labelTimer.text = [NSString stringWithFormat:@"%i", self.timer.counter--];
 }
 
 //determines which if any label is tapped
@@ -92,39 +72,7 @@
     } else if (CGRectContainsPoint(self.labelNine.frame, point)) {
         return self.labelNine;
     } else {
-        return NULL;
-    }
-}
-
-//changes text and color; resets player turns
-- (IBAction)onTapDetected:(UITapGestureRecognizer *)sender {
-    self.detectedLabel = [self findLabelUsingPoint:[sender locationInView:self.view]];
-    NSLog(@"detectedLabel: %@", self.detectedLabel.description);
-
-    if ([self.detectedLabel.text isEqualToString:@""]) {
-        if ([self.currentPlayer isEqualToString:@"x"]) {
-            self.detectedLabel.text = @"x";
-            self.labelCurrentPlayer.text = @"o";
-            self.labelCurrentPlayer.textColor = [UIColor redColor];
-            self.currentPlayer = @"o";
-            [self winnerDetermined];
-        } else {
-            self.detectedLabel.text = @"o";
-            self.labelCurrentPlayer.text = @"x";
-            self.labelCurrentPlayer.textColor = [UIColor blueColor];
-            self.currentPlayer = @"x";
-            [self winnerDetermined];
-        }
-    } else if ([self.detectedLabel.text isEqualToString:@"x"]) {
-        NSLog(@"already an x");
-    } else if ([self.detectedLabel.text isEqualToString:@"o"]) {
-        NSLog(@"already an o");
-    }
-
-    if ([self.detectedLabel.text isEqualToString:@"x"]) {
-        self.detectedLabel.textColor = [UIColor blueColor];
-    } else if ([self.detectedLabel.text isEqualToString:@"o"]){
-        self.detectedLabel.textColor = [UIColor redColor];
+        return nil;
     }
 }
 
@@ -188,7 +136,7 @@
 
 //displays result in an alert
 - (void)winnerDisplayed {
-    [self.timer invalidate];
+    [self.countdownTimer invalidate];
     UIAlertView *winnerAlert = [[UIAlertView alloc] init];
     [winnerAlert addButtonWithTitle:@"Play Again?"];
 
@@ -230,66 +178,196 @@
     self.labelSeven.text = @"";
     self.labelEight.text = @"";
     self.labelNine.text = @"";
-    self.currentPlayer = @"o";
-    self.buttonGameBegin.enabled = true;
-    self.buttonGameBegin.hidden = false;
-    self.labelTimer.enabled = false;
-    self.labelTimer.hidden = true;
+    [self onGameReady];
 }
 
-//sets pan gesture
-//come back here and figure out how to refactor & reuse onLabelTapped method(s)
+//sets detectedLabel on pan gesture instead of tap gesture
 - (IBAction)onLabelDragged:(UIPanGestureRecognizer *)sender {
     CGPoint currentPoint = [sender locationInView:self.view];
+    NSLog(@"detectedLabel: %@", self.detectedLabel.description);
     self.labelDragged.center = currentPoint;
 
     if (sender.state == UIGestureRecognizerStateBegan) {
         if ([self.currentPlayer isEqualToString:@"x"]) {
-            self.currentPlayer = @"o";
+            self.labelCurrentPlayer.text = @"o";
+            self.labelCurrentPlayer.textColor = [UIColor redColor];
         } else {
-            self.currentPlayer = @"x";
-        }
-    }
-
-    if (sender.state == UIGestureRecognizerStateChanged) {
-        if (CGRectContainsPoint(self.labelOne.frame, currentPoint)) {
-            self.labelOne = self.detectedLabel;
-            [self onTapDetected:self.tapGesture];
+            self.labelCurrentPlayer.text = @"x";
+            self.labelCurrentPlayer.textColor = [UIColor blueColor];
         }
     }
 
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [self.timer invalidate];
+        [self stopTimer];
+        [self doCountdown:self.countdownTimer];
+        [self onTimerRunning];
+
+        self.detectedLabel = [self findLabelUsingPoint:[sender locationInView:self.view]];
+        NSLog(@"detectedLabel: %@", self.detectedLabel.description);
+
+        if ([self.detectedLabel.text isEqualToString:@""]) {
+            if ([self.currentPlayer isEqualToString:@"x"]) {
+                self.detectedLabel.text = @"x";
+                self.detectedLabel.textColor = [UIColor blueColor];
+                self.currentPlayer = @"o";
+                self.labelDragged.text = @"o";
+                self.labelDragged.textColor = [UIColor redColor];
+                [self winnerDetermined];
+            } else {
+                self.detectedLabel.text = @"o";
+                self.detectedLabel.textColor = [UIColor redColor];
+                self.currentPlayer = @"x";
+                self.labelDragged.text = @"x";
+                self.labelDragged.textColor = [UIColor blueColor];
+                [self winnerDetermined];
+            }
+        } else if ([self.detectedLabel.text isEqualToString:@"x"]) {
+            NSLog(@"already an x");
+        } else if ([self.detectedLabel.text isEqualToString:@"o"]) {
+            NSLog(@"already an o");
+        } else {
+            nil;
+        }
+
         [UIView animateWithDuration:0.0f animations:^{
             self.labelDragged.center = self.originalCenter;
         }];
     }
 }
 
-- (IBAction)onGameBeginButtonTapped:(UIButton *)sender {
-    self.buttonGameBegin.enabled = false;
-    self.buttonGameBegin.hidden = true;
-    self.labelTimer.enabled = true;
-    self.labelTimer.hidden = false;
-    [self.labelTimer sizeToFit];
-    [self startTimer:self.timer];
+//sets up timer & sets label to remaining time
+- (IBAction)doCountdown: (id)sender {
+    if (self.countdownTimer)
+        return;
+    self.remainingTicks = 10;
+    [self updateLabel];
+
+    self.countdownTimer = [NSTimer scheduledTimerWithTimeInterval: 0.75 target: self selector: @selector(handleTimerTick) userInfo: nil repeats: YES];
 }
 
+- (void)handleTimerTick {
+    self.remainingTicks--;
+    [self updateLabel];
+    [self checkTimer];
 
+    if (self.remainingTicks <= 0) {
+        [self.countdownTimer invalidate];
+        self.countdownTimer = nil;
+    }
+}
+
+- (void)updateLabel {
+    self.labelTimer.text = [[NSNumber numberWithUnsignedInt: self.remainingTicks] stringValue];
+}
+
+- (void)checkTimer {
+    if ([self.labelTimer.text isEqual:@"0"]) {
+        [self stopTimer];
+        UIAlertView *timesUpAlert = [[UIAlertView alloc] init];
+        timesUpAlert.title = @"time's up!";
+        if ([self.currentPlayer isEqualToString:@"x"]) {
+            timesUpAlert.message = @"o loses a turn!";
+            self.currentPlayer = @"x";
+        } else {
+            timesUpAlert.message = @"x loses a turn!";
+            self.currentPlayer = @"o";
+        }
+        [timesUpAlert addButtonWithTitle:@"try again?"];
+    }
+}
+
+-(void)stopTimer {
+    [self.countdownTimer invalidate];
+    self.countdownTimer = nil;
+    [self updateLabel];
+}
+
+//starts timer (currently redundant)
+- (IBAction)onGameBeginButtonTapped:(UIButton *)sender {
+    [self onTimerRunning];
+}
+
+//segues
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     WebViewController *vc = segue.destinationViewController;
-    vc.timer = self.timer;
 }
 
 -(IBAction)goBack:(UIStoryboardSegue *)sender {
+    [self onTimerRunning];
+}
+
+
+// custom methods - refactoring
+-(void)startingPlayerO {
+    self.currentPlayer = @"o";
+    self.labelCurrentPlayer.text = @"x";
+    self.labelCurrentPlayer.textColor = [UIColor blueColor];
+    self.labelDragged.text = @"o";
+    self.labelDragged.textColor = [UIColor redColor];
+}
+
+-(void)onTimerRunning {
     self.buttonGameBegin.enabled = false;
     self.buttonGameBegin.hidden = true;
     self.labelTimer.enabled = true;
     self.labelTimer.hidden = false;
-    [self.labelTimer sizeToFit];
-    [self startTimer:self.timer];
+    [self doCountdown:self.countdownTimer];
+    [self checkTimer];
 }
 
-
+-(void)onGameReady {
+    self.buttonGameBegin.enabled = true;
+    self.buttonGameBegin.hidden = false;
+    self.labelTimer.enabled = false;
+    self.labelTimer.hidden = true;
+    [self startingPlayerO];
+}
 
 @end
+
+//old code:
+/*
+
+ changes text and color; resets player turns - tap detection only
+ - (IBAction)onTapDetected:(UITapGestureRecognizer *)sender {
+ self.detectedLabel = [self findLabelUsingPoint:[sender locationInView:self.view]];
+ NSLog(@"detectedLabel: %@", self.detectedLabel.description);
+
+ if ([self.detectedLabel.text isEqualToString:@""]) {
+ if ([self.currentPlayer isEqualToString:@"x"]) {
+ [self onPlayerXTurn];
+ } else {
+ [self onPlayerOTurn];
+ }
+ } else if ([self.detectedLabel.text isEqualToString:@"x"]) {
+ NSLog(@"already an x");
+ } else if ([self.detectedLabel.text isEqualToString:@"o"]) {
+ NSLog(@"already an o");
+ }
+
+ if ([self.detectedLabel.text isEqualToString:@"x"]) {
+ self.detectedLabel.textColor = [UIColor blueColor];
+ } else if ([self.detectedLabel.text isEqualToString:@"o"]){
+ self.detectedLabel.textColor = [UIColor redColor];
+ }
+ }
+
+
+// refactoring: works only for tap gesture
+ -(void)onPlayerXTurn {
+ self.detectedLabel.text = @"x";
+ self.labelCurrentPlayer.text = @"o";
+ self.labelCurrentPlayer.textColor = [UIColor redColor];
+ self.currentPlayer = @"o";
+ [self winnerDetermined];
+ }
+
+ -(void)onPlayerOTurn {
+ self.detectedLabel.text = @"o";
+ self.labelCurrentPlayer.text = @"x";
+ self.labelCurrentPlayer.textColor = [UIColor blueColor];
+ self.currentPlayer = @"x";
+ [self winnerDetermined];
+ }
+
+*/

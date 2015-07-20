@@ -10,11 +10,5 @@
 
 @interface RootViewController : UIViewController
 
-@property CGPoint position;
-@property NSTimer *timer;
-
--(IBAction)startTimer;
--(IBAction)stopTimer;
-
 @end
 
